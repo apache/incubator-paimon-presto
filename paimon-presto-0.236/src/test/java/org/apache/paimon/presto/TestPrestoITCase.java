@@ -208,6 +208,25 @@ public class TestPrestoITCase {
                 .isEqualTo("[[1, 1, 3, 3], [2, 3, 3, 3]]");
     }
 
+    @Test
+    public void testCreateTable() throws Exception {
+        sql(
+                "CREATE TABLE orders ("
+                        + "  order_key bigint,"
+                        + "  order_status varchar,"
+                        + "  total_price double,"
+                        + "  order_date date"
+                        + ")"
+                        + "WITH ("
+                        + "file_format = 'ORC',"
+                        + "primary_key = ARRAY['order_key','order_date'],"
+                        + "partitioned_by = ARRAY['order_date'],"
+                        + "bucket = '2',"
+                        + "bucket_key = 'order_key',"
+                        + "changelog_producer = 'input'"
+                        + ")");
+    }
+
     private String sql(String sql) throws Exception {
         MaterializedResult result = createQueryRunner().execute(sql);
         return result.getMaterializedRows().toString();
